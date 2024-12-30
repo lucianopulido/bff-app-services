@@ -18,13 +18,11 @@ public class CognitoSdkClient implements CloudClientPort {
 
     @Override
     public <T, R> Mono<R> createUser(T request, Class<R> responseType) {
-        return Mono.fromCallable(() -> responseType.cast(cognitoClient.adminCreateUser((AdminCreateUserRequest) request)))
-                .onErrorMap(ex -> new RuntimeException("Error creating user: " + ex.getMessage()));
+        return Mono.fromCallable(() -> responseType.cast(cognitoClient.adminCreateUser((AdminCreateUserRequest) request)));
     }
 
     @Override
     public <T, R> Mono<R> getUser(T request, Class<R> responseType) {
-        return Mono.fromCallable(() -> responseType.cast(cognitoClient.adminGetUser((AdminGetUserRequest) request)))
-                .onErrorMap(ex -> new RuntimeException("Error retrieving user: " + ex.getMessage()));
+        return Mono.fromCallable(() -> responseType.cast(cognitoClient.adminGetUser((AdminGetUserRequest) request)));
     }
 }
