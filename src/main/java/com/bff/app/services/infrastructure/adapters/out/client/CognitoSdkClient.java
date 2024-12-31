@@ -4,6 +4,8 @@ import com.bff.app.services.domain.port.out.CloudClientPort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmForgotPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpRequest;
@@ -30,5 +32,15 @@ public class CognitoSdkClient implements CloudClientPort {
     @Override
     public <T, R> Mono<R> loginUser(T request, Class<R> responseType) {
         return Mono.fromCallable(() -> responseType.cast(cognitoClient.initiateAuth((InitiateAuthRequest) request)));
+    }
+
+    @Override
+    public <T, R> Mono<R> forgotPassword(T request, Class<R> responseType) {
+        return Mono.fromCallable(() -> responseType.cast(cognitoClient.forgotPassword((ForgotPasswordRequest) request)));
+    }
+
+    @Override
+    public <T, R> Mono<R> confirmForgotPassword(T request, Class<R> responseType) {
+        return Mono.fromCallable(() -> responseType.cast(cognitoClient.confirmForgotPassword((ConfirmForgotPasswordRequest) request)));
     }
 }

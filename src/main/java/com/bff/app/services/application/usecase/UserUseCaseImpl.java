@@ -38,4 +38,14 @@ public class UserUseCaseImpl implements UserUseCase {
         return cognitoPort.loginUser(user).map(LoginResponseMapper.INSTANCE::toLoginResponseDto);
     }
 
+    @Override
+    public Mono<Void> initiateForgotPassword(String email) {
+        return cognitoPort.initiateForgotPassword(email);
+    }
+
+    @Override
+    public Mono<Void> confirmForgotPassword(String email, String confirmationCode, String newPassword) {
+        return cognitoPort.confirmForgotPassword(email, confirmationCode, newPassword);
+    }
+
 }

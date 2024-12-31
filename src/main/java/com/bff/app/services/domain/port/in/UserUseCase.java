@@ -9,4 +9,8 @@ public interface UserUseCase {
     Mono<UserResponse> createOrder(LoginRequestDto request);
 
     Mono<LoginResponseDto> loginUser(LoginRequestDto request);
+
+    Mono<Void> initiateForgotPassword(String email);
+
+    Mono<Void> confirmForgotPassword(String email, String confirmationCode, String newPassword);
 }

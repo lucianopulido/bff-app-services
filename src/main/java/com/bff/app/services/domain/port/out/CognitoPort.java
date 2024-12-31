@@ -9,4 +9,8 @@ public interface CognitoPort {
     Mono<SignUpResponse> createUser(User user);
 
     Mono<AuthenticationResultType> loginUser(User request);
+
+    Mono<Void> initiateForgotPassword(String email);
+
+    Mono<Void> confirmForgotPassword(String email, String confirmationCode, String newPassword);
 }

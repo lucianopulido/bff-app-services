@@ -1,5 +1,7 @@
 package com.bff.app.services.infrastructure.adapters.in;
 
+import com.bff.app.services.application.dto.ConfirmPasswordRequestDto;
+import com.bff.app.services.application.dto.ForgotPasswordRequestDto;
 import com.bff.app.services.application.dto.LoginRequestDto;
 import com.bff.app.services.application.dto.LoginResponseDto;
 import com.bff.app.services.application.dto.UserResponse;
@@ -34,5 +36,21 @@ public class UserController {
     public Mono<ResponseEntity<LoginResponseDto>> loginUser(@Valid @RequestBody LoginRequestDto request) {
         return userUseCase.loginUser(request).map(ResponseEntity::ok);
     }
+
+    @PostMapping("/forgot-password")
+    public Mono<ResponseEntity<Void>> forgotPassword(@RequestBody ForgotPasswordRequestDto request) {
+        return userUseCase.initiateForgotPassword(request.getEmail())
+                .then(Mono.just(ResponseEntity.noContent().build()));
+    }
+
+    @PostMapping("/confirm-password")
+    public Mono<ResponseEntity<Void>> confirmPassword(@RequestBody ConfirmPasswordRequestDto request) {
+        return userUseCase.confirmForgotPassword(
+                request.getEmail(),
+                request.getConfirmationCode(),
+                request.getNewPassword()
+        ).then(Mono.just(ResponseEntity.noContent().build()));
+    }
+
 
 }
