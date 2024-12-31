@@ -1,6 +1,7 @@
 package com.bff.app.services.infrastructure.exceptions;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
     private static final Map<String, Function<CognitoIdentityProviderException, ResponseEntity<ErrorDto>>> errorMap =
             Map.of(
@@ -32,14 +33,36 @@ public class GlobalExceptionHandler {
                             "Invalid parameters",
                             ex.getMessage(),
                             HttpStatus.BAD_REQUEST
+                    ),
+                    "NotAuthorizedException", ex -> createErrorResponse(
+                            "Invalid credentials",
+                            ex.getMessage(),
+                            HttpStatus.UNAUTHORIZED
+                    ),
+                    "UserNotConfirmedException", ex -> createErrorResponse(
+                            "User is not confirmed",
+                            ex.getMessage(),
+                            HttpStatus.UNAUTHORIZED
+                    ),
+                    "TooManyRequestsException", ex -> createErrorResponse(
+                            "Too many requests",
+                            ex.getMessage(),
+                            HttpStatus.TOO_MANY_REQUESTS
                     )
             );
 
+
     @ExceptionHandler(CognitoIdentityProviderException.class)
     public Mono<ResponseEntity<ErrorDto>> handleCognitoException(CognitoIdentityProviderException ex) {
+        String errorCode = ex.awsErrorDetails().errorCode();
+
+        if (!errorMap.containsKey(errorCode)) {
+            log.error("Unmapped Cognito error: {} ", errorCode);
+        }
+
         return Mono.just(
                 errorMap.getOrDefault(
-                        ex.awsErrorDetails().errorCode(),
+                        errorCode,
                         exception -> createErrorResponse(
                                 "An unexpected error occurred",
                                 exception.getMessage(),
