@@ -4,6 +4,7 @@ import com.bff.app.services.application.dto.LoginRequestDto;
 import com.bff.app.services.application.dto.LoginResponseDto;
 import com.bff.app.services.application.dto.UserResponse;
 import com.bff.app.services.domain.port.in.UserUseCase;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,12 @@ public class UserController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<UserResponse>> createUser(@RequestBody LoginRequestDto request) {
+    public Mono<ResponseEntity<UserResponse>> createUser(@Valid @RequestBody LoginRequestDto request) {
         return userUseCase.createOrder(request).map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<LoginResponseDto>> loginUser(@RequestBody LoginRequestDto request) {
+    public Mono<ResponseEntity<LoginResponseDto>> loginUser(@Valid @RequestBody LoginRequestDto request) {
         return userUseCase.loginUser(request).map(ResponseEntity::ok);
     }
 
