@@ -1,7 +1,5 @@
 package com.bff.app.services.infrastructure.adapters.out.aws;
 
-import com.bff.app.services.application.dto.LoginResponseDto;
-import com.bff.app.services.application.dto.UserResponse;
 import com.bff.app.services.domain.model.User;
 import com.bff.app.services.domain.port.out.CloudClientPort;
 import com.bff.app.services.domain.port.out.CognitoPort;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpRequest;
@@ -33,7 +32,7 @@ public class CognitoAdapter implements CognitoPort {
     }
 
     @Override
-    public Mono<UserResponse> createUser(User user) {
+    public Mono<SignUpResponse> createUser(User user) {
         SignUpRequest request = SignUpRequest.builder()
                 .clientId(clientId)
                 .username(user.getEmail())
@@ -43,12 +42,11 @@ public class CognitoAdapter implements CognitoPort {
                 )
                 .build();
 
-        return cognitoClient.createUser(request, SignUpResponse.class)
-                .map(response -> new UserResponse(response.userSub(), user.getEmail()));
+        return cognitoClient.createUser(request, SignUpResponse.class);
     }
 
     @Override
-    public Mono<LoginResponseDto> loginUser(User user) {
+    public Mono<AuthenticationResultType> loginUser(User user) {
         InitiateAuthRequest request = InitiateAuthRequest.builder()
                 .authFlow(AuthFlowType.USER_PASSWORD_AUTH)
                 .clientId(clientId)
@@ -59,12 +57,7 @@ public class CognitoAdapter implements CognitoPort {
                 .build();
 
         return cognitoClient.loginUser(request, InitiateAuthResponse.class)
-                .map(InitiateAuthResponse::authenticationResult)
-                .map(authResult -> new LoginResponseDto(
-                        authResult.idToken(),
-                        authResult.accessToken(),
-                        authResult.refreshToken()
-                ));
+                .map(InitiateAuthResponse::authenticationResult);
     }
 
 
