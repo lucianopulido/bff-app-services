@@ -10,6 +10,10 @@ import com.bff.app.services.domain.port.in.UserUseCase;
 import com.bff.app.services.domain.port.out.CognitoPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmForgotPasswordResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmSignUpResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ResendConfirmationCodeResponse;
 
 
 @Service
@@ -39,13 +43,24 @@ public class UserUseCaseImpl implements UserUseCase {
     }
 
     @Override
-    public Mono<Void> initiateForgotPassword(String email) {
+    public Mono<ForgotPasswordResponse> initiateForgotPassword(String email) {
         return cognitoPort.initiateForgotPassword(email);
     }
 
     @Override
-    public Mono<Void> confirmForgotPassword(String email, String confirmationCode, String newPassword) {
+    public Mono<ConfirmForgotPasswordResponse> confirmForgotPassword(String email, String confirmationCode, String newPassword) {
         return cognitoPort.confirmForgotPassword(email, confirmationCode, newPassword);
     }
+
+    @Override
+    public Mono<ResendConfirmationCodeResponse> resendVerificationCode(String email) {
+        return cognitoPort.resendVerificationCode(email);
+    }
+
+    @Override
+    public Mono<ConfirmSignUpResponse> confirmEmail(String email, String code) {
+        return cognitoPort.confirmEmail(email, code);
+    }
+
 
 }

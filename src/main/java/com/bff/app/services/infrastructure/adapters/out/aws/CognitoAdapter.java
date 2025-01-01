@@ -11,10 +11,14 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowTyp
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmForgotPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmForgotPasswordResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmSignUpRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmSignUpResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ResendConfirmationCodeRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ResendConfirmationCodeResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpResponse;
 
@@ -65,17 +69,17 @@ public class CognitoAdapter implements CognitoPort {
     }
 
     @Override
-    public Mono<Void> initiateForgotPassword(String email) {
+    public Mono<ForgotPasswordResponse> initiateForgotPassword(String email) {
         ForgotPasswordRequest request = ForgotPasswordRequest.builder()
                 .clientId(clientId)
                 .username(email)
                 .build();
 
-        return cognitoClient.forgotPassword(request, ForgotPasswordResponse.class).then();
+        return cognitoClient.forgotPassword(request, ForgotPasswordResponse.class);
     }
 
     @Override
-    public Mono<Void> confirmForgotPassword(String email, String confirmationCode, String newPassword) {
+    public Mono<ConfirmForgotPasswordResponse> confirmForgotPassword(String email, String confirmationCode, String newPassword) {
         ConfirmForgotPasswordRequest request = ConfirmForgotPasswordRequest.builder()
                 .clientId(clientId)
                 .username(email)
@@ -83,7 +87,28 @@ public class CognitoAdapter implements CognitoPort {
                 .password(newPassword)
                 .build();
 
-        return cognitoClient.confirmForgotPassword(request, ConfirmForgotPasswordResponse.class).then();
+        return cognitoClient.confirmForgotPassword(request, ConfirmForgotPasswordResponse.class);
+    }
+
+    @Override
+    public Mono<ResendConfirmationCodeResponse> resendVerificationCode(String email) {
+        ResendConfirmationCodeRequest request = ResendConfirmationCodeRequest.builder()
+                .clientId(clientId)
+                .username(email)
+                .build();
+
+        return cognitoClient.resendVerificationCode(request, ResendConfirmationCodeResponse.class);
+    }
+
+    @Override
+    public Mono<ConfirmSignUpResponse> confirmEmail(String email, String code) {
+        ConfirmSignUpRequest request = ConfirmSignUpRequest.builder()
+                .clientId(clientId)
+                .username(email)
+                .confirmationCode(code)
+                .build();
+
+        return cognitoClient.confirmEmail(request, ConfirmSignUpResponse.class);
     }
 
 }

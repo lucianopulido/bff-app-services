@@ -5,6 +5,8 @@ import com.bff.app.services.application.dto.ForgotPasswordRequestDto;
 import com.bff.app.services.application.dto.LoginRequestDto;
 import com.bff.app.services.application.dto.LoginResponseDto;
 import com.bff.app.services.application.dto.UserResponse;
+import com.bff.app.services.application.dto.VerifyEmailDto;
+import com.bff.app.services.application.dto.VerifyEmailRequestDto;
 import com.bff.app.services.domain.port.in.UserUseCase;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,18 @@ public class UserController {
                 request.getConfirmationCode(),
                 request.getNewPassword()
         ).then(Mono.just(ResponseEntity.noContent().build()));
+    }
+
+    @PostMapping("/resend-verification-code")
+    public Mono<ResponseEntity<Void>> resendVerificationCode(@RequestBody VerifyEmailRequestDto request) {
+        return userUseCase.resendVerificationCode(request.getEmail())
+                .then(Mono.just(ResponseEntity.noContent().build()));
+    }
+
+    @PostMapping("/confirm-email")
+    public Mono<ResponseEntity<Void>> confirmEmail(@RequestBody VerifyEmailDto request) {
+        return userUseCase.confirmEmail(request.getEmail(), request.getCode())
+                .then(Mono.just(ResponseEntity.noContent().build()));
     }
 
 

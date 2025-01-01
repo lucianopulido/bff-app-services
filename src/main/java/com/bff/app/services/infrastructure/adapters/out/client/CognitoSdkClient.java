@@ -5,9 +5,11 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmForgotPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ConfirmSignUpRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ResendConfirmationCodeRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpRequest;
 
 @Component
@@ -42,5 +44,15 @@ public class CognitoSdkClient implements CloudClientPort {
     @Override
     public <T, R> Mono<R> confirmForgotPassword(T request, Class<R> responseType) {
         return Mono.fromCallable(() -> responseType.cast(cognitoClient.confirmForgotPassword((ConfirmForgotPasswordRequest) request)));
+    }
+
+    @Override
+    public <T, R> Mono<R> resendVerificationCode(T request, Class<R> responseType) {
+        return Mono.fromCallable(() -> responseType.cast(cognitoClient.resendConfirmationCode((ResendConfirmationCodeRequest) request)));
+    }
+
+    @Override
+    public <T, R> Mono<R> confirmEmail(T request, Class<R> responseType) {
+        return Mono.fromCallable(() -> responseType.cast(cognitoClient.confirmSignUp((ConfirmSignUpRequest) request)));
     }
 }
